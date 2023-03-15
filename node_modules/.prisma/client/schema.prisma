@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../database.db"
+}
+
+model User {
+  id              String     @id @unique @default(uuid())
+  name            String     
+  email           String     @unique 
+  password        String     
+  avatar_url      String     
+  adoption_record Adoption[]
+  my_pets         Pet[]
+
+  @@map("users")
+}
+
+model Pet {
+  id                     String     @id @unique @default(uuid())
+  name                   String     
+  bread                  String     
+  species                String     
+  available_for_adoption Boolean    @default(true)
+  avatar_url             String     
+  adoption_record        Adoption[]
+  guardian               User       @relation(fields: [guardian_id], references: [id], onDelete: Cascade)
+  guardian_id            String
+
+  @@map("pets")
+}
+
+model Adoption {
+  id         String @id @unique @default(uuid())
+  adopter    User   @relation(fields: [adopter_id], references: [id], onDelete: Cascade)
+  adopter_id String
+  pet        Pet    @relation(fields: [pet_id], references: [id], onDelete: Cascade)
+  pet_id     String
+
+  @@map("adoptions")
+}
